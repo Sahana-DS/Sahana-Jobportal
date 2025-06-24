@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_service
+    ports:
+      - "5005:5432"
+    environment:
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./Backend
+    container_name: backend_service
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: yourusername
+      DB_PASSWORD: yourpassword
+      DB_NAME: yourdatabase
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+
+  browsing-jobs:
+    build:
+      context: ./browsing-jobs
+    container_name: browsing_jobs_service
+    ports:
+      - "7091:80"
+    depends_on:
+      - backend
+
+  hr-side-posting:
+    build:
+      context: ./hr-side posting
+    container_name: hr_side_posting_service
+    ports:
+      - "7092:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
